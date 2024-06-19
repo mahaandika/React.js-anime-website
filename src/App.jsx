@@ -40,97 +40,170 @@ const animesData = [
   },
 ];
 
-export default function App() {
+// awal dari component Header
+function Logo() {
+  return (
+    <div className="logo">
+      <span role="img">🍥</span>
+      <h1>WeeBoo</h1>
+      <span role="img">🍥</span>
+    </div>
+  );
+}
+
+function NumResult() {
+  return (
+    <p className="search-results">
+      Found <strong>4</strong> results
+    </p>
+  );
+}
+
+function SearchBar() {
   const [query, setQuery] = useState("");
+  return (
+    <div className="search-container">
+      <input
+        className="search"
+        type="text"
+        placeholder="Search anime..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <NumResult />
+    </div>
+  );
+}
+
+function Header() {
+  return (
+    <>
+      <nav className="nav-bar">
+        <Logo />
+        <SearchBar />
+      </nav>
+    </>
+  );
+}
+// akhir dari component Header
+
+// awal dari component Main
+// component Anime, dan AnimeList dipanggil di component AnimeBoxList
+function Anime({ anime, onSelectedAnime }) {
+  return (
+    <li onClick={() => onSelectedAnime(anime.mal_id)}>
+      <img src={anime.image} alt={`${anime.title} cover`} />
+      <h3>{anime.title}</h3>
+      <div>
+        <p>
+          <span>{anime.year}</span>
+        </p>
+      </div>
+    </li>
+  );
+}
+
+function AnimeList({ animes, onSelectedAnime }) {
+  return (
+    <ul className="list list-anime">
+      {animes?.map((anime) => (
+        <Anime
+          key={anime.mal_id}
+          anime={anime}
+          onSelectedAnime={onSelectedAnime}
+        />
+      ))}
+    </ul>
+  );
+}
+
+function AnimeBoxList({ animes, onSelectedAnime }) {
+  const [isOpen1, setIsOpen1] = useState(true);
+
+  return (
+    <>
+      <div className="box">
+        <button
+          className="btn-toggle"
+          onClick={() => setIsOpen1((open) => !open)}
+        >
+          {isOpen1 ? "–" : "+"}
+        </button>
+        {isOpen1 && (
+          <AnimeList animes={animes} onSelectedAnime={onSelectedAnime} />
+        )}
+      </div>
+    </>
+  );
+}
+
+// component AnimeDetail dipanggil di component AnimeBoxDetail
+function AnimeDetail({ selectedAnime }) {
+  return (
+    <>
+      <div className="details">
+        <header>
+          <img src={selectedAnime.image} alt={`${selectedAnime.title} cover`} />
+          <div className="details-overview">
+            <h2>{selectedAnime.title}</h2>
+            <p>
+              {selectedAnime.year} &bull; {selectedAnime.score}
+            </p>
+          </div>
+        </header>
+        <section>
+          <p>
+            <em>{selectedAnime.synopsis}</em>
+          </p>
+        </section>
+      </div>
+    </>
+  );
+}
+
+function AnimeBoxDetail({ selectedAnime }) {
+  const [isOpen2, setIsOpen2] = useState(true);
+
+  return (
+    <>
+      <div className="box">
+        <button
+          className="btn-toggle"
+          onClick={() => setIsOpen2((open) => !open)}
+        >
+          {isOpen2 ? "–" : "+"}
+        </button>
+        {isOpen2 && <AnimeDetail selectedAnime={selectedAnime} />}
+      </div>
+    </>
+  );
+}
+
+// di dalam component Main, kita panggil component AnimeBoxList dan component AnimeBoxDetail yang sudah kita buat
+function Main() {
   const [animes, setAnimes] = useState(animesData);
   const [selectedAnime, setSelectedAnime] = useState(animes[0]);
-  const [isOpen1, setIsOpen1] = useState(true);
-  const [isOpen2, setIsOpen2] = useState(true);
 
   function handleSelectedAnime(id) {
     const newAnime = animes.filter((anime) => anime.mal_id === id);
     setSelectedAnime(newAnime[0]);
   }
-
   return (
     <>
-      <nav className="nav-bar">
-        <div className="logo">
-          <span role="img">🍥</span>
-          <h1>WeeBoo</h1>
-          <span role="img">🍥</span>
-        </div>
-        <div className="search-container">
-          <input
-            className="search"
-            type="text"
-            placeholder="Search anime..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <p className="search-results">
-            Found <strong>4</strong> results
-          </p>
-        </div>
-      </nav>
-
       <main className="main">
-        <div className="box">
-          <button
-            className="btn-toggle"
-            onClick={() => setIsOpen1((open) => !open)}
-          >
-            {isOpen1 ? "–" : "+"}
-          </button>
-          {isOpen1 && (
-            <ul className="list list-anime">
-              {animes?.map((anime) => (
-                <li
-                  key={anime.mal_id}
-                  onClick={() => handleSelectedAnime(anime.mal_id)}
-                >
-                  <img src={anime.image} alt={`${anime.title} cover`} />
-                  <h3>{anime.title}</h3>
-                  <div>
-                    <p>
-                      <span>{anime.year}</span>
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div className="box">
-          <button
-            className="btn-toggle"
-            onClick={() => setIsOpen2((open) => !open)}
-          >
-            {isOpen2 ? "–" : "+"}
-          </button>
-          {isOpen2 && (
-            <div className="details">
-              <header>
-                <img
-                  src={selectedAnime.image}
-                  alt={`${selectedAnime.title} cover`}
-                />
-                <div className="details-overview">
-                  <h2>{selectedAnime.title}</h2>
-                  <p>
-                    {selectedAnime.year} &bull; {selectedAnime.score}
-                  </p>
-                </div>
-              </header>
-              <section>
-                <p>
-                  <em>{selectedAnime.synopsis}</em>
-                </p>
-              </section>
-            </div>
-          )}
-        </div>
+        <AnimeBoxList animes={animes} onSelectedAnime={handleSelectedAnime} />
+        <AnimeBoxDetail selectedAnime={selectedAnime} />
       </main>
+    </>
+  );
+}
+
+// di komponent App kita panggil component Header dan component Main
+export default function App() {
+  return (
+    <>
+      <Header />
+      <Main />
     </>
   );
 }
