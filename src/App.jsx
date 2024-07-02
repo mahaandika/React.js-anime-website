@@ -118,21 +118,19 @@ function AnimeList({ animes, onSelectedAnime }) {
   );
 }
 
-function AnimeBoxList({ animes, onSelectedAnime }) {
-  const [isOpen1, setIsOpen1] = useState(true);
+function AnimeBoxList({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <>
       <div className="box">
         <button
           className="btn-toggle"
-          onClick={() => setIsOpen1((open) => !open)}
+          onClick={() => setIsOpen((open) => !open)}
         >
-          {isOpen1 ? "–" : "+"}
+          {isOpen ? "–" : "+"}
         </button>
-        {isOpen1 && (
-          <AnimeList animes={animes} onSelectedAnime={onSelectedAnime} />
-        )}
+        {isOpen && children}
       </div>
     </>
   );
@@ -162,38 +160,11 @@ function AnimeDetail({ selectedAnime }) {
   );
 }
 
-function AnimeBoxDetail({ selectedAnime }) {
-  const [isOpen2, setIsOpen2] = useState(true);
-
-  return (
-    <>
-      <div className="box">
-        <button
-          className="btn-toggle"
-          onClick={() => setIsOpen2((open) => !open)}
-        >
-          {isOpen2 ? "–" : "+"}
-        </button>
-        {isOpen2 && <AnimeDetail selectedAnime={selectedAnime} />}
-      </div>
-    </>
-  );
-}
-
 // di dalam component Main, kita panggil component AnimeBoxList dan component AnimeBoxDetail yang sudah kita buat
-function Main({ animes }) {
-  const [selectedAnime, setSelectedAnime] = useState(animes[0]);
-
-  function handleSelectedAnime(id) {
-    const newAnime = animes.filter((anime) => anime.mal_id === id);
-    setSelectedAnime(newAnime[0]);
-  }
+function Main({ children }) {
   return (
     <>
-      <main className="main">
-        <AnimeBoxList animes={animes} onSelectedAnime={handleSelectedAnime} />
-        <AnimeBoxDetail selectedAnime={selectedAnime} />
-      </main>
+      <main className="main">{children}</main>
     </>
   );
 }
@@ -201,6 +172,12 @@ function Main({ animes }) {
 // di komponent App kita panggil component Header dan component Main
 export default function App() {
   const [animes, setAnimes] = useState(animesData);
+  const [selectedAnime, setSelectedAnime] = useState(animes[0]);
+
+  function handleSelectedAnime(id) {
+    const newAnime = animes.filter((anime) => anime.mal_id === id);
+    setSelectedAnime(newAnime[0]);
+  }
 
   return (
     <>
@@ -209,7 +186,14 @@ export default function App() {
           <NumResult animes={animes} />
         </SearchBar>
       </Header>
-      <Main animes={animes} />
+      <Main>
+        <AnimeBoxList>
+          <AnimeList animes={animes} onSelectedAnime={handleSelectedAnime} />
+        </AnimeBoxList>
+        <AnimeBoxList>
+          <AnimeDetail selectedAnime={selectedAnime} />
+        </AnimeBoxList>
+      </Main>
     </>
   );
 }
