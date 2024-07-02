@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import { Children } from "react";
 
 const animesData = [
   {
@@ -59,7 +60,7 @@ function NumResult({ animes }) {
   );
 }
 
-function SearchBar({ animes }) {
+function SearchBar({ children }) {
   const [query, setQuery] = useState("");
   return (
     <div className="search-container">
@@ -70,17 +71,17 @@ function SearchBar({ animes }) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <NumResult animes={animes} />
+      {children}
     </div>
   );
 }
 
-function Header({ animes }) {
+function Header({ children }) {
   return (
     <>
       <nav className="nav-bar">
         <Logo />
-        <SearchBar animes={animes} />
+        {children}
       </nav>
     </>
   );
@@ -203,7 +204,11 @@ export default function App() {
 
   return (
     <>
-      <Header animes={animes} />
+      <Header>
+        <SearchBar>
+          <NumResult animes={animes} />
+        </SearchBar>
+      </Header>
       <Main animes={animes} />
     </>
   );
