@@ -51,15 +51,15 @@ function Logo() {
   );
 }
 
-function NumResult() {
+function NumResult({ animes }) {
   return (
     <p className="search-results">
-      Found <strong>4</strong> results
+      Found <strong>{animes.length}</strong> results
     </p>
   );
 }
 
-function SearchBar() {
+function SearchBar({ animes }) {
   const [query, setQuery] = useState("");
   return (
     <div className="search-container">
@@ -70,17 +70,17 @@ function SearchBar() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <NumResult />
+      <NumResult animes={animes} />
     </div>
   );
 }
 
-function Header() {
+function Header({ animes }) {
   return (
     <>
       <nav className="nav-bar">
         <Logo />
-        <SearchBar />
+        <SearchBar animes={animes} />
       </nav>
     </>
   );
@@ -180,8 +180,7 @@ function AnimeBoxDetail({ selectedAnime }) {
 }
 
 // di dalam component Main, kita panggil component AnimeBoxList dan component AnimeBoxDetail yang sudah kita buat
-function Main() {
-  const [animes, setAnimes] = useState(animesData);
+function Main({ animes }) {
   const [selectedAnime, setSelectedAnime] = useState(animes[0]);
 
   function handleSelectedAnime(id) {
@@ -200,10 +199,12 @@ function Main() {
 
 // di komponent App kita panggil component Header dan component Main
 export default function App() {
+  const [animes, setAnimes] = useState(animesData);
+
   return (
     <>
-      <Header />
-      <Main />
+      <Header animes={animes} />
+      <Main animes={animes} />
     </>
   );
 }
